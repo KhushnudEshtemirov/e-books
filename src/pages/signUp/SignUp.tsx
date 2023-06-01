@@ -7,11 +7,12 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { useFetching } from "../../hooks/useFetching";
-import { useEffect, useState } from "react";
+import { signUp } from "../../redux/booksSlice/extraReducers";
+import { useDispatch } from "react-redux";
+import { useAppDispatch } from "../../hooks";
 
 export default function SignUp() {
-  const { fetchSignUpData } = useFetching();
+  const dispatch = useAppDispatch();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -22,12 +23,12 @@ export default function SignUp() {
       key: data.get("key"),
       secret: data.get("secret"),
     };
-
-    fetchSignUpData({
+    const payloadData = {
       method: "POST",
       specialUrl: "/signup",
       data: postData,
-    });
+    };
+    dispatch(signUp(payloadData));
   };
 
   return (

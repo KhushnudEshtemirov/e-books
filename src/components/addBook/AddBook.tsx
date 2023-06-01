@@ -8,26 +8,41 @@ import {
   Container,
 } from "@mui/material";
 
-import { useState } from "react";
-import { useFetching } from "../../hooks/useFetching";
+import { useState, useEffect } from "react";
+type ModalPropsType = {
+  showModal: () => void;
+};
 
-const AddBook = () => {
+const AddBook = ({ showModal }: ModalPropsType) => {
   let [bookNumber, setBookNumber] = useState("");
-  const { fetchData, response } = useFetching();
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
 
-    fetchData({
-      method: "POST",
-      specialUrl: "/books",
-      data: {
-        isbn: bookNumber.toString(),
-      },
-    });
+    // addBook({
+    //   method: "POST",
+    //   specialUrl: "/books",
+    //   data: JSON.stringify({
+    //     isbn: bookNumber,
+    //   }),
+    // });
+
+    // showModal();
+
+    // setBookNumber("");
   };
 
-  console.log(response);
+  // useEffect(() => {
+  //   if (addBookResponse.response.isOk) {
+  //     getBooks({
+  //       method: "GET",
+  //       specialUrl: "/books",
+  //       data: {},
+  //     });
+  //   }
+  // }, [addBookResponse.response]);
+
+  // console.log(addBookResponse);
 
   return (
     <Container component="main" maxWidth="xs">
@@ -58,6 +73,7 @@ const AddBook = () => {
             id="bookNumber"
             label="Enter Book's ISBN"
             name="bookNumber"
+            value={bookNumber}
             autoFocus
             onChange={(e) => setBookNumber(e.target.value)}
           />
