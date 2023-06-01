@@ -9,8 +9,6 @@ export type fetchProps = {
 export const signUp = createAsyncThunk(
   "signUp",
   async (payload: fetchProps) => {
-    console.log(payload);
-
     return await customAxios({
       method: payload.method,
       url: payload.specialUrl,

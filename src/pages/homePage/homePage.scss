@@ -1,0 +1,23 @@
+.home-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  a {
+    color: #fff;
+    padding: 16px 24px;
+    font-size: 15px;
+    border-radius: 5px;
+    margin-top: 30px;
+    border: 1px solid #0d49e0;
+    background: #0d49e0;
+    transition: 0.2s;
+
+    &:hover {
+      color: #0d49e0;
+      background: #fff;
+    }
+  }
+}

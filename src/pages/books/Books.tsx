@@ -9,6 +9,7 @@ import { red } from "@mui/material/colors";
 import Button from "@mui/material/Button";
 import { useEffect, useState, useRef } from "react";
 import { Fab } from "@mui/material";
+
 import AddIcon from "@mui/icons-material/Add";
 import AddBook from "../../components/addBook/AddBook";
 import { useSelector, useDispatch } from "react-redux";
@@ -22,6 +23,7 @@ import {
   removeBook,
 } from "../../redux/booksSlice/extraReducers";
 import { useAppDispatch } from "../../hooks";
+import Loader from "../../components/loader/Loader";
 
 const user1 = require("../../assets/images/authors/1.jpeg");
 const user2 = require("../../assets/images/authors/2.jpeg");
@@ -34,10 +36,18 @@ const user8 = require("../../assets/images/authors/8.jpeg");
 const user9 = require("../../assets/images/authors/9.jpeg");
 const user10 = require("../../assets/images/authors/10.jpeg");
 
+type StatusType = {
+  id: number;
+  name: string;
+}[];
+
 export default function RecipeReviewCard() {
   const { books, booksLoading, addBookStatus, removeBookStatus, bookStatus } =
     useSelector(booksData);
   const dispatch = useAppDispatch();
+
+  const [showId, setShowId] = useState<number | null>(null);
+
   const images = [
     user1,
     user2,
@@ -64,6 +74,12 @@ export default function RecipeReviewCard() {
     "https://i.ibb.co/7tWsy3r/9.png",
     "https://i.ibb.co/LNvwZ0Z/8.png",
     "https://i.ibb.co/kHxH3GN/7.png",
+  ];
+
+  const statusData: StatusType = [
+    { id: 0, name: "New" },
+    { id: 1, name: "Reading" },
+    { id: 2, name: "Finished" },
   ];
 
   let [modal, setModal] = useState(false);
@@ -95,7 +111,7 @@ export default function RecipeReviewCard() {
   }, [addBookStatus, removeBookStatus, bookStatus]);
 
   if (booksLoading) {
-    return <p>loading...</p>;
+    return <Loader />;
   }
 
   const handleRemove = (id: number) => {
@@ -108,82 +124,116 @@ export default function RecipeReviewCard() {
     dispatch(removeBook(payloadData));
   };
 
-  const handleChangeBook = (id: number) => {
+  const handleChangeBook = (bookId: number, statusId: number) => {
     const payloadData: fetchProps = {
       method: "PATCH",
       specialUrl: "/books",
-      data: JSON.stringify({ status: 3 }),
-      id: id,
+      data: JSON.stringify({ status: statusId }),
+      id: bookId,
     };
-    dispatch(changeStatusBook(payloadData));
-  };
 
-  console.log(books);
+    dispatch(changeStatusBook(payloadData));
+
+    setShowId(null);
+  };
 
   return (
     <div className="all-books">
-      <Fab
-        ref={addRef}
-        color="primary"
-        aria-label="add"
-        className="add-icon"
-        title="Add New Book"
-        onClick={showModal}
-      >
-        <AddIcon />
-      </Fab>
-      <div className={`modal-window ${modal ? "show-modal" : ""}`}>
-        <AddBook showModal={showModal} />
+      <h2 style={{ textAlign: "center", margin: "30px auto" }}>
+        All Books Here
+      </h2>
+      <div className="container">
+        <Fab
+          ref={addRef}
+          color="primary"
+          aria-label="add"
+          className="add-icon"
+          title="Add New Book"
+          onClick={showModal}
+        >
+          <AddIcon />
+        </Fab>
+        <div className={`modal-window ${modal ? "show-modal" : ""}`}>
+          <AddBook showModal={showModal} />
+        </div>
+        {books ? (
+          books?.map((book: BooksDataType, index: number) => (
+            <Card
+              sx={{ minWidth: 200, maxWidth: "100%", position: "relative" }}
+              key={book.book.id}
+            >
+              <div className="all-books__status">
+                {book.status === 0 ? (
+                  <span className="all-books__new-status">New</span>
+                ) : book.status === 1 ? (
+                  <span className="all-books__reading-status">Reading</span>
+                ) : (
+                  <span className="all-books__finished-status">Finished</span>
+                )}
+              </div>
+              <CardHeader
+                avatar={
+                  <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
+                    <img
+                      style={{ width: "100%" }}
+                      src={images[index]}
+                      alt="author"
+                    />
+                  </Avatar>
+                }
+                title={book.book.author}
+                subheader={book.book.published + " year"}
+              />
+              <CardMedia
+                component="img"
+                height="300"
+                image={booksImages[index]}
+                alt="Paella dish"
+                sx={{ objectFit: "fill" }}
+              />
+              <CardContent>
+                <Typography variant="body2" color="text.secondary">
+                  {book.book.title}
+                </Typography>
+              </CardContent>
+              <CardActions>
+                <div
+                  className={`all-books__three-status ${
+                    book.book.id === showId ? "show" : ""
+                  }`}
+                >
+                  {statusData.map((status) => (
+                    <span
+                      key={status.id}
+                      onClick={() => handleChangeBook(book.book.id, status.id)}
+                    >
+                      {status.name}
+                    </span>
+                  ))}
+                </div>
+                <Button
+                  size="large"
+                  style={{ background: "blue", color: "white" }}
+                  onClick={() => setShowId(book.book.id)}
+                >
+                  Change status
+                </Button>
+                <Button
+                  size="large"
+                  style={{ background: "red", color: "white" }}
+                  onClick={() => handleRemove(book.book.id)}
+                >
+                  Delete
+                </Button>
+              </CardActions>
+            </Card>
+          ))
+        ) : (
+          <h3 className="all-books__no-book">
+            You have not any book yet. Click plus (+) button to add a new book.
+          </h3>
+        )}
       </div>
-      {books ? (
-        books?.map((book: BooksDataType) => (
-          <Card sx={{ maxWidth: 345 }} key={book.book.id}>
-            <CardHeader
-              avatar={
-                <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-                  <img
-                    style={{ width: "100%" }}
-                    src={images[Math.floor(Math.random() * 10)]}
-                    alt="author"
-                  />
-                </Avatar>
-              }
-              title={book.book.author}
-              subheader={book.book.published + " year"}
-            />
-            <CardMedia
-              component="img"
-              height="300"
-              image={booksImages[Math.floor(Math.random() * 10)]}
-              alt="Paella dish"
-              sx={{ objectFit: "fill" }}
-            />
-            <CardContent>
-              <Typography variant="body2" color="text.secondary">
-                {book.book.title}
-              </Typography>
-            </CardContent>
-            <CardActions>
-              <Button
-                size="small"
-                style={{ background: "blue", color: "white" }}
-                onClick={() => handleChangeBook(book.book.id)}
-              >
-                Change status
-              </Button>
-              <Button
-                size="small"
-                style={{ background: "red", color: "white" }}
-                onClick={() => handleRemove(book.book.id)}
-              >
-                Delete
-              </Button>
-            </CardActions>
-          </Card>
-        ))
-      ) : (
-        <p>hozirda sizda kitob mavjud emas</p>
-      )}
     </div>
   );
 }

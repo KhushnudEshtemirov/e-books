@@ -20,6 +20,7 @@ export type Book = {
 
 export type BooksDataType = {
   book: Book;
+  status: number;
 };
 
 interface IInitialState {
