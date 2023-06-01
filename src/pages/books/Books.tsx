@@ -12,7 +12,7 @@ import { Fab } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
 import AddBook from "../../components/addBook/AddBook";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 import "./books.scss";
 import { BooksDataType, booksData } from "../../redux/booksSlice";
