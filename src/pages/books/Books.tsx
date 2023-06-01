@@ -15,7 +15,12 @@ import { useSelector, useDispatch } from "react-redux";
 
 import "./books.scss";
 import { BooksDataType, booksData } from "../../redux/booksSlice";
-import { fetchProps, getBooks } from "../../redux/booksSlice/extraReducers";
+import {
+  changeStatusBook,
+  fetchProps,
+  getBooks,
+  removeBook,
+} from "../../redux/booksSlice/extraReducers";
 import { useAppDispatch } from "../../hooks";
 
 const user1 = require("../../assets/images/authors/1.jpeg");
@@ -30,7 +35,8 @@ const user9 = require("../../assets/images/authors/9.jpeg");
 const user10 = require("../../assets/images/authors/10.jpeg");
 
 export default function RecipeReviewCard() {
-  const { books, booksLoading } = useSelector(booksData);
+  const { books, booksLoading, addBookStatus, removeBookStatus, bookStatus } =
+    useSelector(booksData);
   const dispatch = useAppDispatch();
   const images = [
     user1,
@@ -69,8 +75,6 @@ export default function RecipeReviewCard() {
   };
 
   useEffect(() => {
-    console.log("skadg");
-
     const payloadData: fetchProps = {
       method: "GET",
       specialUrl: "/books",
@@ -79,17 +83,40 @@ export default function RecipeReviewCard() {
     dispatch(getBooks(payloadData));
   }, []);
 
-  // useEffect(() => {
-  //   // getBooks({
-  //   //   method: "GET",
-  //   //   specialUrl: "/books",
-  //   //   data: {},
-  //   // });
-  // }, [addBookResponse.response]);
+  useEffect(() => {
+    if (addBookStatus || removeBookStatus || bookStatus) {
+      const payloadData: fetchProps = {
+        method: "GET",
+        specialUrl: "/books",
+        data: {},
+      };
+      dispatch(getBooks(payloadData));
+    }
+  }, [addBookStatus, removeBookStatus, bookStatus]);
 
   if (booksLoading) {
     return <p>loading...</p>;
   }
+
+  const handleRemove = (id: number) => {
+    const payloadData: fetchProps = {
+      method: "DELETE",
+      specialUrl: "/books",
+      data: {},
+      id: id,
+    };
+    dispatch(removeBook(payloadData));
+  };
+
+  const handleChangeBook = (id: number) => {
+    const payloadData: fetchProps = {
+      method: "PATCH",
+      specialUrl: "/books",
+      data: JSON.stringify({ status: 3 }),
+      id: id,
+    };
+    dispatch(changeStatusBook(payloadData));
+  };
 
   console.log(books);
 
@@ -109,7 +136,7 @@ export default function RecipeReviewCard() {
         <AddBook showModal={showModal} />
       </div>
       {books ? (
-        books.map((book: BooksDataType) => (
+        books?.map((book: BooksDataType) => (
           <Card sx={{ maxWidth: 345 }} key={book.book.id}>
             <CardHeader
               avatar={
@@ -140,12 +167,14 @@ export default function RecipeReviewCard() {
               <Button
                 size="small"
                 style={{ background: "blue", color: "white" }}
+                onClick={() => handleChangeBook(book.book.id)}
               >
                 Change status
               </Button>
               <Button
                 size="small"
                 style={{ background: "red", color: "white" }}
+                onClick={() => handleRemove(book.book.id)}
               >
                 Delete
               </Button>

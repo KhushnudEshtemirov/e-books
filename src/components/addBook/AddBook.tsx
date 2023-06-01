@@ -9,40 +9,33 @@ import {
 } from "@mui/material";
 
 import { useState, useEffect } from "react";
+import { useAppDispatch } from "../../hooks";
+import { addBook } from "../../redux/booksSlice/extraReducers";
 type ModalPropsType = {
   showModal: () => void;
 };
 
 const AddBook = ({ showModal }: ModalPropsType) => {
+  const dispatch = useAppDispatch();
   let [bookNumber, setBookNumber] = useState("");
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
 
-    // addBook({
-    //   method: "POST",
-    //   specialUrl: "/books",
-    //   data: JSON.stringify({
-    //     isbn: bookNumber,
-    //   }),
-    // });
+    dispatch(
+      addBook({
+        method: "POST",
+        specialUrl: "/books",
+        data: JSON.stringify({
+          isbn: bookNumber,
+        }),
+      })
+    );
 
-    // showModal();
+    showModal();
 
-    // setBookNumber("");
+    setBookNumber("");
   };
-
-  // useEffect(() => {
-  //   if (addBookResponse.response.isOk) {
-  //     getBooks({
-  //       method: "GET",
-  //       specialUrl: "/books",
-  //       data: {},
-  //     });
-  //   }
-  // }, [addBookResponse.response]);
-
-  // console.log(addBookResponse);
 
   return (
     <Container component="main" maxWidth="xs">

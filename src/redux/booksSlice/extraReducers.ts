@@ -4,6 +4,7 @@ export type fetchProps = {
   method: string;
   specialUrl: string;
   data?: object | string;
+  id?: number;
 };
 export const signUp = createAsyncThunk(
   "signUp",
@@ -45,7 +46,7 @@ export const removeBook = createAsyncThunk(
   async (payload: fetchProps) => {
     return await customAxios({
       method: payload.method,
-      url: payload.specialUrl,
+      url: payload.specialUrl + "/" + payload.id,
       data: payload.data,
     }).then((res) => res.data);
   }
@@ -56,7 +57,7 @@ export const changeStatusBook = createAsyncThunk(
   async (payload: fetchProps) => {
     return await customAxios({
       method: payload.method,
-      url: payload.specialUrl,
+      url: payload.specialUrl + "/" + payload.id,
       data: payload.data,
     }).then((res) => res.data);
   }

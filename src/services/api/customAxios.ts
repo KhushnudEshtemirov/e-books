@@ -11,8 +11,8 @@ axios.interceptors.request.use(function (config) {
 
   const keys = Object.keys(config.data);
   const values = Object.values(config.data);
-  console.log(Object.keys(userData));
-  console.log(Object.values(userData));
+  // console.log(Object.keys(userData));
+  // console.log(Object.values(userData));
 
   config.headers.Key =
     Object.keys(userData).length > 0 ? userData.data.key : "";
@@ -25,6 +25,15 @@ axios.interceptors.request.use(function (config) {
         ).toString()
       : "";
 
+  console.log(
+    CryptoJS.MD5(
+      `${config.method?.toUpperCase()}${config.url}${
+        keys.length > 0 ? config.data : ""
+      }${userData.data.secret}`
+    ).toString()
+  );
+  console.log(config);
+  console.log(keys);
   return config;
 });
 

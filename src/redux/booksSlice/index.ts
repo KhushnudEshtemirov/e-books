@@ -1,6 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
-import { addBook, getBooks, signUp } from "./extraReducers";
+import {
+  addBook,
+  changeStatusBook,
+  getBooks,
+  removeBook,
+  signUp,
+} from "./extraReducers";
 
 export type Book = {
   author: string;
@@ -19,11 +25,19 @@ export type BooksDataType = {
 interface IInitialState {
   user: object;
   userLoading: boolean;
+
   books: BooksDataType[];
   booksLoading: boolean;
-  bookData: object;
-  bookStatus: string;
+
+  addBookStatus: string | null;
   bookDataLoading: boolean;
+
+  removeBookLoading: boolean;
+  removeBookStatus: string | null;
+
+  bookStatusLoading: boolean;
+  bookStatus: string | null;
+
   error: string | undefined;
 }
 
@@ -34,9 +48,14 @@ const initialState: IInitialState = {
   books: {} as BooksDataType[],
   booksLoading: true,
 
-  bookData: {},
-  bookStatus: "",
+  addBookStatus: "",
   bookDataLoading: true,
+
+  removeBookLoading: true,
+  removeBookStatus: "",
+
+  bookStatusLoading: true,
+  bookStatus: "",
 
   error: "",
 };
@@ -57,36 +76,63 @@ const booksSlice = createSlice({
       .addCase(signUp.rejected, (state, { error }) => {
         state.userLoading = false;
         state.error = error.message;
-        console.log(error.message);
       });
 
     builder
       .addCase(getBooks.pending, (state) => {
         state.booksLoading = true;
-        console.log("pending");
       })
       .addCase(getBooks.fulfilled, (state, { payload }) => {
         state.booksLoading = false;
         state.books = payload.data;
-        console.log(payload);
       })
       .addCase(getBooks.rejected, (state, { error }) => {
         state.booksLoading = false;
         state.error = error.message;
-        console.log(error.message);
       });
 
     builder
       .addCase(addBook.pending, (state) => {
         state.bookDataLoading = true;
+        state.addBookStatus = "";
       })
       .addCase(addBook.fulfilled, (state, { payload }) => {
         state.bookDataLoading = false;
-        state.bookData = payload;
-        state.bookStatus = "successful";
+        state.addBookStatus = "successful";
       })
       .addCase(addBook.rejected, (state, { error }) => {
         state.bookDataLoading = false;
+        state.error = error.message;
+        state.addBookStatus = null;
+      });
+
+    builder
+      .addCase(removeBook.pending, (state) => {
+        state.removeBookLoading = true;
+        state.removeBookStatus = "";
+      })
+      .addCase(removeBook.fulfilled, (state, { payload }) => {
+        state.removeBookLoading = false;
+        state.removeBookStatus = "successful";
+      })
+      .addCase(removeBook.rejected, (state, { error }) => {
+        state.removeBookLoading = false;
+        state.removeBookStatus = null;
+        state.error = error.message;
+      });
+
+    builder
+      .addCase(changeStatusBook.pending, (state) => {
+        state.bookStatusLoading = true;
+        state.bookStatus = "";
+      })
+      .addCase(changeStatusBook.fulfilled, (state, { payload }) => {
+        state.bookStatusLoading = false;
+        state.bookStatus = "successful";
+      })
+      .addCase(changeStatusBook.rejected, (state, { error }) => {
+        state.bookStatusLoading = false;
+        state.bookStatus = null;
         state.error = error.message;
       });
   },
