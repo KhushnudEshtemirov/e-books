@@ -1,11 +1,14 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import customAxios from "../../services/api/customAxios";
+
 export type fetchProps = {
   method: string;
   specialUrl: string;
   data?: object | string;
   id?: number;
 };
+
+// Sign Up  Action
 export const signUp = createAsyncThunk(
   "signUp",
   async (payload: fetchProps) => {
@@ -17,6 +20,7 @@ export const signUp = createAsyncThunk(
   }
 );
 
+// Get All Books Action
 export const getBooks = createAsyncThunk(
   "getBooks",
   async (payload: fetchProps) => {
@@ -28,6 +32,7 @@ export const getBooks = createAsyncThunk(
   }
 );
 
+// Add a New Book Action
 export const addBook = createAsyncThunk(
   "addBook",
   async (payload: fetchProps) => {
@@ -39,6 +44,7 @@ export const addBook = createAsyncThunk(
   }
 );
 
+// Remove a Book Action
 export const removeBook = createAsyncThunk(
   "removeBook",
   async (payload: fetchProps) => {
@@ -50,6 +56,7 @@ export const removeBook = createAsyncThunk(
   }
 );
 
+// Change Book's Status Action
 export const changeStatusBook = createAsyncThunk(
   "changeStatusBook",
   async (payload: fetchProps) => {

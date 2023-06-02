@@ -8,16 +8,10 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { signUp } from "../../redux/booksSlice/extraReducers";
-import { useSelector } from "react-redux";
 import { useAppDispatch } from "../../hooks";
-import { useEffect } from "react";
-import { booksData } from "../../redux/booksSlice";
-import { useNavigate } from "react-router-dom";
 
 export default function SignUp() {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  const { user } = useSelector(booksData);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
