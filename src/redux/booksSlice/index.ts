@@ -23,8 +23,14 @@ export type BooksDataType = {
   status: number;
 };
 
+type UserType = {
+  data: object;
+  isOk: boolean;
+  message: string;
+};
+
 interface IInitialState {
-  user: object;
+  user: UserType;
   userLoading: boolean;
 
   books: BooksDataType[];
@@ -43,7 +49,9 @@ interface IInitialState {
 }
 
 const initialState: IInitialState = {
-  user: {},
+  user: localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user") || "{}")
+    : ({} as UserType),
   userLoading: true,
 
   books: {} as BooksDataType[],
@@ -66,12 +74,14 @@ const booksSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
+    // Sign Up
     builder
       .addCase(signUp.pending, (state) => {
         state.userLoading = true;
       })
       .addCase(signUp.fulfilled, (state, { payload }) => {
         state.userLoading = false;
+        state.user = payload;
         localStorage.setItem("user", JSON.stringify(payload));
       })
       .addCase(signUp.rejected, (state, { error }) => {
@@ -92,6 +102,7 @@ const booksSlice = createSlice({
         state.error = error.message;
       });
 
+    // Add new Book
     builder
       .addCase(addBook.pending, (state) => {
         state.bookDataLoading = true;
@@ -107,6 +118,7 @@ const booksSlice = createSlice({
         state.addBookStatus = null;
       });
 
+    // Remove Book
     builder
       .addCase(removeBook.pending, (state) => {
         state.removeBookLoading = true;
@@ -122,6 +134,7 @@ const booksSlice = createSlice({
         state.error = error.message;
       });
 
+    // Change Book Status
     builder
       .addCase(changeStatusBook.pending, (state) => {
         state.bookStatusLoading = true;
